@@ -24,6 +24,7 @@
 2. `python scripts/03_batch_crawl.py` （批量爬取最新原始数据，带降级容错）
 3. `python scripts/04_clean.py` （清洗数据，统一单位与日期格式）
 4. `streamlit run app.py` （重启前端查看新数据）
+
 *(注：`02_get_one.py` 为单只股票接口测试脚本，不参与全量流水线)*
 
 ## 🛠️ 技术栈与开发细节
