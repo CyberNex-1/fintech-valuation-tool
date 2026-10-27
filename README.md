@@ -1,3 +1,5 @@
+🚀 **在线体验链接**：[点击这里访问](https://fintech-valuation-tool.streamlit.app/)
+
 # A股金融科技估值查询工具（Vibe Coding 独立开发）
 
 这是一个针对投资者难以快速获取同赛道估值对比痛点而开发的 Web 工具，首版聚焦于 A 股“金融科技”板块的截面估值数据分析。
