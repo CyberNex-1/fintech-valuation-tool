@@ -1,42 +1,99 @@
-🚀 **在线体验链接**：[点击这里访问](https://fintech-valuation-tool.streamlit.app/)
-
 # A股金融科技估值查询工具（Vibe Coding 独立开发）
+
+🚀 **在线体验链接**：[点击这里访问](https://fintech-valuation-tool.streamlit.app/)
 
 这是一个针对投资者难以快速获取同赛道估值对比痛点而开发的 Web 工具，首版聚焦于 A 股“金融科技”板块的截面估值数据分析。
 
 ## 🌟 核心功能
+
 - **个股检索**：支持下拉搜索，快速查看单只股票的 PE(TTM)、PB、ROE 及总市值。
 - **横向对比**：提供全板块数据表格，支持按市值排序与 PE 排位对比。
 - **可视化看板**：内置 PE 横向柱状图（寻找估值洼地）与 PB-ROE 四象限散点图（寻找高性价比资产）。
 
 ## ⚠️ 数据快照说明
+
 - 当前仓库中的 `data/clean.csv` 为**数据快照**，更新于：**2026年10月27日**（包含当时的行情与最新财报）。
 - 为了演示的稳定性和避免高频请求被封禁，线上页面直接读取该快照数据，不会实时触发爬虫。
 
+可以，确实更合理。把“安装依赖”提升为所有场景通用步骤后，场景一和场景二就不必重复写 `pip install -r requirements.txt`。建议将 README 中的「运行指南」替换为以下内容：
+
+赞同，这样层级更清晰：`0` 虚拟环境、`1` 安装依赖、`2` 运行项目三者并列，场景一和场景二作为 `2` 的子场景。建议将 README 中的「🚀 运行指南」替换为以下内容：
+
 ## 🚀 运行指南
 
-### 场景一：仅查看前端页面（开箱即用）
-数据已就绪，无需重新爬取。请在终端执行：
-`pip install -r requirements.txt`
-`streamlit run app.py`
+> 💡 **建议使用虚拟环境**：为避免 Python 依赖版本冲突，建议在运行项目前创建并激活虚拟环境。以下命令以项目根目录为例。
 
-### 场景二：重新抓取并更新最新数据（开发者模式）
+### 0. 创建并激活虚拟环境（推荐）
+
+**Windows（PowerShell / CMD）：**
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+**macOS / Linux：**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+激活成功后，终端提示符前通常会显示 `(.venv)`。
+
+### 1. 安装项目依赖（所有场景通用）
+
+无论仅查看前端页面，还是重新抓取数据，都需要先安装项目依赖：
+
+```bash
+pip install -r requirements.txt
+```
+
+> 如果跳过虚拟环境，也仍需执行上述依赖安装命令。
+
+### 2. 运行项目
+
+#### 场景一：仅查看前端页面（开箱即用）
+
+数据已就绪，无需重新爬取。完成上述虚拟环境创建与依赖安装后，直接启动前端：
+
+```bash
+streamlit run app.py
+```
+
+#### 场景二：重新抓取并更新最新数据（开发者模式）
+
+> ⚠️ **注意**：请先完成上述虚拟环境创建与依赖安装，否则爬虫脚本和前端可能因缺少依赖而无法运行。
+
 由于爬虫脚本内置了断点续传机制（避免重复请求），若需全量获取最新行情，**请先手动删除 `data/raw.csv`**，然后按顺序运行 `scripts/` 目录下的脚本：
-1. `python scripts/01_get_pool.py` （获取板块最新成分股）
-2. `python scripts/03_batch_crawl.py` （批量爬取最新原始数据，带降级容错）
-3. `python scripts/04_clean.py` （清洗数据，统一单位与日期格式）
-4. `streamlit run app.py` （重启前端查看新数据）
+
+```bash
+# 1. 删除旧原始数据，触发全量抓取
+# Windows: del data\raw.csv
+# macOS/Linux: rm data/raw.csv
+
+# 2. 按顺序运行数据流水线
+python scripts/01_get_pool.py      # 获取板块最新成分股
+python scripts/03_batch_crawl.py   # 批量爬取最新原始数据，带降级容错
+python scripts/04_clean.py         # 清洗数据，统一单位与日期格式
+
+# 3. 重启前端查看新数据
+streamlit run app.py
+```
 
 *(注：`02_get_one.py` 为单只股票接口测试脚本，不参与全量流水线)*
 
 ## 🛠️ 技术栈与开发细节
-- **前端展示**：Streamlit + Plotly (交互式图表)
-- **数据获取**：akshare (主接口) + 腾讯财经 HTTP API (降级备用接口)
+
+- **前端展示**：Streamlit + Plotly（交互式图表）
+- **数据获取**：akshare（主接口）+ 腾讯财经 HTTP API（降级备用接口）
 - **数据清洗**：Pandas
 - **业务校验**：针对不同公司季报披露时间不一的问题，在 UI 层引入 `report_date` 标记；修正了 AI 默认抓取“摊薄ROE”的逻辑，强制优先取“加权ROE”以保证横向对比的公平性。
 
-## 🤖 开发模式 (AI辅助)
+## 🤖 开发模式（AI辅助）
+
 本项目全程采用 Vibe Coding 模式，使用 Trae 等 AI 工具辅助生成代码。开发者主要负责需求拆解、接口字段校验、异常排查与产品 UI 迭代。
 
 ## ⚖️ 免责声明
+
 数据仅供学习交流，不构成任何投资建议。
